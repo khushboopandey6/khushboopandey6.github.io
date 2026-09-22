@@ -1,51 +1,57 @@
-const menuBtn = document.getElementById("menuBtn");
-const navMenu = document.getElementById("navMenu");
-
-menuBtn.addEventListener("click", () => {
-    navMenu.classList.toggle("active");
-});
-
-
-const navLinks = document.querySelectorAll("#navMenu a");
-
-navLinks.forEach((link) => {
-    link.addEventListener("click", () => {
-        navMenu.classList.remove("active");
+// Custom Cursor
+const cursor = document.getElementById('cursor');
+if (cursor && window.matchMedia('(hover: hover)').matches) {
+    window.addEventListener('mousemove', (e) => {
+        cursor.style.top = e.clientY + 'px';
+        cursor.style.left = e.clientX + 'px';
     });
-});
 
+    document.querySelectorAll('a, .card, .btn, .pill-link, .more-btn, summary, .burger, .award-card, .rec-card').forEach((el) => {
+        el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
+    });
+}
 
-const revealElements = document.querySelectorAll(
-    ".section, .project-card, .skill-card, .timeline-item, .education-card"
-);
+// Mobile Navigation
+const burger = document.getElementById('burger');
+const navlinks = document.getElementById('navlinks');
+const navClose = document.getElementById('navClose');
 
-const observer = new IntersectionObserver(
+if (burger && navlinks) {
+    burger.addEventListener('click', () => navlinks.classList.toggle('open'));
+    navlinks.querySelectorAll('a').forEach((a) => {
+        a.addEventListener('click', () => navlinks.classList.remove('open'));
+    });
+}
+
+if (navClose && navlinks) {
+    navClose.addEventListener('click', () => navlinks.classList.remove('open'));
+}
+
+// Updates "More" Toggle
+const moreBtn = document.getElementById('moreUpdates');
+if (moreBtn) {
+    moreBtn.addEventListener('click', () => {
+        const extras = document.querySelectorAll('.updates-list li.extra');
+        if (extras.length > 0) {
+            const open = extras[0].classList.contains('show');
+            extras.forEach((li) => li.classList.toggle('show', !open));
+            moreBtn.textContent = open ? 'More ↓' : 'Less ↑';
+        }
+    });
+}
+
+// Scroll Reveal Observer
+const io = new IntersectionObserver(
     (entries) => {
-
-        entries.forEach((entry) => {
-
-            if (entry.isIntersecting) {
-
-                entry.target.style.opacity = "1";
-                entry.target.style.transform = "translateY(0)";
-
+        entries.forEach((en) => {
+            if (en.isIntersecting) {
+                en.target.classList.add('show');
+                io.unobserve(en.target);
             }
-
         });
-
     },
-    {
-        threshold: 0.08
-    }
+    { threshold: 0.1 }
 );
 
-
-revealElements.forEach((element) => {
-
-    element.style.opacity = "0";
-    element.style.transform = "translateY(25px)";
-    element.style.transition = "opacity 0.7s ease, transform 0.7s ease";
-
-    observer.observe(element);
-
-});
+document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
